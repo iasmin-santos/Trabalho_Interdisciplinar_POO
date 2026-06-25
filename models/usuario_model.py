@@ -53,7 +53,7 @@ class UsuarioModel:
             conn.close()
 
             #Se o email não for encontrado no database, retorna False
-            if resultado in None:
+            if resultado is None:
                 return False
 
             #Recupera senha criptografada do database

@@ -34,7 +34,7 @@ class Database:
                 descricao TEXT)
         ''')
 
-        # Tabela Itens
+        # Tabela Itens (Agora com a coluna foto_path oficializada)
         cursor.execute(''' 
             CREATE TABLE IF NOT EXISTS itens(
                 id_item INTEGER PRIMARY KEY AUTOINCREMENT, 
@@ -44,6 +44,7 @@ class Database:
                 local TEXT NOT NULL, 
                 tipo_item TEXT NOT NULL CHECK(tipo_item IN ('Perdido', 'Achado')), 
                 status TEXT NOT NULL DEFAULT 'Ativo' CHECK(status IN ('Ativo', 'Reivindicado', 'Entregue', 'Arquivado')), 
+                foto_path TEXT,
                 id_categoria INTEGER, 
                 id_usuario INTEGER, 
                 FOREIGN KEY (id_categoria) REFERENCES categorias(id_categoria) ON DELETE SET NULL, 
@@ -77,3 +78,18 @@ class Database:
 
         conn.commit()
         conn.close()
+
+    def buscar_itens_por_filtro(self, termo):
+        """Retorna do banco os itens cujos títulos ou descrições correspondam ao filtro."""
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        
+        query = """
+            SELECT id_item, titulo, descricao, tipo_item, foto_path
+            FROM itens 
+            WHERE titulo LIKE ? OR descricao LIKE ?
+        """
+        cursor.execute(query, (f'%{termo}%', f'%{termo}%'))
+        linhas = cursor.fetchall()
+        conn.close()
+        return linhas
