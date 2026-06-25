@@ -81,7 +81,7 @@
              </font>
             </property>
             <property name="text">
-             <string>&lt;b&gt;MINAS GERAIS&lt;/b&gt;&lt;br&gt;Campus Belo Horizonte</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;MINAS GERAIS&lt;/span&gt;&lt;br/&gt;Campus Ibirité&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
            </widget>
           </item>
@@ -94,7 +94,6 @@
           <font>
            <family>Arial</family>
            <pointsize>14</pointsize>
-           <weight>75</weight>
            <bold>true</bold>
           </font>
          </property>
@@ -109,7 +108,7 @@
        <item>
         <spacer name="horizontalSpacer_header">
          <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+          <enum>Qt::Orientation::Horizontal</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -150,7 +149,7 @@
        <string>Bem-vindo ao &lt;b&gt;Achados e Perdidos IFMG&lt;/b&gt;. O que você precisa fazer hoje?</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignCenter</set>
+       <set>Qt::AlignmentFlag::AlignCenter</set>
       </property>
      </widget>
     </item>
@@ -177,7 +176,6 @@
          <font>
           <family>Arial</family>
           <pointsize>16</pointsize>
-          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -190,7 +188,7 @@
 QPushButton:hover { background-color: #257a3b; }</string>
         </property>
         <property name="text">
-         <string>+ ENCONTREI UM ITEM</string>
+         <string>ENCONTREI UM ITEM</string>
         </property>
        </widget>
       </item>
@@ -206,7 +204,6 @@ QPushButton:hover { background-color: #257a3b; }</string>
          <font>
           <family>Arial</family>
           <pointsize>16</pointsize>
-          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -219,7 +216,7 @@ QPushButton:hover { background-color: #257a3b; }</string>
 QPushButton:hover { background-color: #d1720c; }</string>
         </property>
         <property name="text">
-         <string>📢 PERDI UM ITEM</string>
+         <string> PERDI UM ITEM</string>
         </property>
        </widget>
       </item>
@@ -239,7 +236,6 @@ QPushButton:hover { background-color: #d1720c; }</string>
          <font>
           <family>Arial</family>
           <pointsize>12</pointsize>
-          <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
@@ -262,7 +258,7 @@ QPushButton:hover { background-color: #d1720c; }</string>
            <x>0</x>
            <y>0</y>
            <width>898</width>
-           <height>400</height>
+           <height>470</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_cards">
@@ -270,113 +266,7 @@ QPushButton:hover { background-color: #d1720c; }</string>
            <number>15</number>
           </property>
           <item>
-           <widget class="QFrame" name="frame_card1">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>120</height>
-             </size>
-            </property>
-            <property name="styleSheet">
-             <string>QFrame { background-color: white; border: 1px solid #ddd; border-radius: 8px; }</string>
-            </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_card1">
-             <item>
-              <widget class="QLabel" name="img_placeholder1">
-               <property name="minimumSize">
-                <size>
-                 <width>100</width>
-                 <height>100</height>
-                </size>
-               </property>
-               <property name="styleSheet">
-                <string>background-color: #eee; border-radius: 5px;</string>
-               </property>
-               <property name="text">
-                <string>Imagem</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <layout class="QVBoxLayout" name="verticalLayout_detalhes1">
-               <property name="leftMargin">
-                <number>15</number>
-               </property>
-               <item>
-                <widget class="QLabel" name="label_status1">
-                 <property name="font">
-                  <font>
-                   <family>Arial</family>
-                   <weight>75</weight>
-                   <bold>true</bold>
-                  </font>
-                 </property>
-                 <property name="styleSheet">
-                  <string>color: #d9534f; border: none;</string>
-                 </property>
-                 <property name="text">
-                  <string>[PERDIDO]</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_info1">
-                 <property name="font">
-                  <font>
-                   <family>Arial</family>
-                  </font>
-                 </property>
-                 <property name="styleSheet">
-                  <string>border: none;</string>
-                 </property>
-                 <property name="text">
-                  <string>&lt;b&gt;Item:&lt;/b&gt; Garrafa Stanley Azul (500ml)&lt;br&gt;&lt;b&gt;Local:&lt;/b&gt; Bloco A - Sala 302&lt;br&gt;&lt;b&gt;Data:&lt;/b&gt; 17/06/2026</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <widget class="QPushButton" name="btn_detalhes1">
-               <property name="minimumSize">
-                <size>
-                 <width>150</width>
-                 <height>45</height>
-                </size>
-               </property>
-               <property name="font">
-                <font>
-                 <family>Arial</family>
-                 <weight>75</weight>
-                 <bold>true</bold>
-                </font>
-               </property>
-               <property name="styleSheet">
-                <string>QPushButton { background-color: #278c43; color: white; border-radius: 5px; }</string>
-               </property>
-               <property name="text">
-                <string>VER DETALHES</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item>
-           <spacer name="verticalSpacer">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
+           <widget class="QListWidget" name="listWidget_itens"/>
           </item>
          </layout>
         </widget>

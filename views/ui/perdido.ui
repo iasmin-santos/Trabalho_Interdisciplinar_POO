@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>750</width>
+    <width>756</width>
     <height>550</height>
    </rect>
   </property>
@@ -62,7 +62,6 @@ QLineEdit:focus, QDateEdit:focus, QTimeEdit:focus, QTextEdit:focus {
       <font>
        <family>Arial</family>
        <pointsize>16</pointsize>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
@@ -77,7 +76,7 @@ padding: 10px;</string>
       <string>CADASTRAR ITEM PERDIDO</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignCenter</set>
+      <set>Qt::AlignmentFlag::AlignCenter</set>
      </property>
     </widget>
    </item>
@@ -98,12 +97,15 @@ padding: 10px;</string>
         <number>10</number>
        </property>
        <item>
-        <widget class="QLabel" name="label_upload">
+        <widget class="QLabel" name="label_foto">
          <property name="minimumSize">
           <size>
            <width>280</width>
            <height>250</height>
           </size>
+         </property>
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
          </property>
          <property name="styleSheet">
           <string>background-color: #f4f5f7;
@@ -115,10 +117,7 @@ color: #555;</string>
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:48pt; color:#888;&quot;&gt;📷&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;Arraste ou Clique para&lt;/br&gt;Upload de Foto (Opcional)&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Até 10MB&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-         <property name="cursor">
-          <cursorShape>PointingHandCursor</cursorShape>
+          <set>Qt::AlignmentFlag::AlignCenter</set>
          </property>
         </widget>
        </item>
@@ -136,20 +135,20 @@ color: #555;</string>
            <height>60</height>
           </size>
          </property>
+         <property name="toolTip">
+          <string>Miniatura da imagem</string>
+         </property>
          <property name="styleSheet">
           <string>background-color: #e0d5c1;
 border: 1px solid #ccc;
 border-radius: 5px;</string>
-         </property>
-         <property name="toolTip">
-          <string>Miniatura da imagem</string>
          </property>
         </widget>
        </item>
        <item>
         <spacer name="verticalSpacer_foto">
          <property name="orientation">
-          <enum>Qt::Vertical</enum>
+          <enum>Qt::Orientation::Vertical</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -176,7 +175,6 @@ border-radius: 5px;</string>
            <property name="font">
             <font>
              <family>Arial</family>
-             <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
@@ -186,7 +184,7 @@ border-radius: 5px;</string>
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="lineEdit_nome">
+          <widget class="QLineEdit" name="txt_nome_item">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -210,7 +208,6 @@ border-radius: 5px;</string>
            <property name="font">
             <font>
              <family>Arial</family>
-             <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
@@ -249,7 +246,6 @@ border-radius: 5px;</string>
              <property name="font">
               <font>
                <family>Arial</family>
-               <weight>75</weight>
                <bold>true</bold>
               </font>
              </property>
@@ -259,7 +255,7 @@ border-radius: 5px;</string>
             </widget>
            </item>
            <item>
-            <widget class="QDateEdit" name="dateEdit_data">
+            <widget class="QDateEdit" name="dateEdit">
              <property name="minimumSize">
               <size>
                <width>0</width>
@@ -283,7 +279,6 @@ border-radius: 5px;</string>
              <property name="font">
               <font>
                <family>Arial</family>
-               <weight>75</weight>
                <bold>true</bold>
               </font>
              </property>
@@ -293,7 +288,7 @@ border-radius: 5px;</string>
             </widget>
            </item>
            <item>
-            <widget class="QTimeEdit" name="timeEdit_hora">
+            <widget class="QTimeEdit" name="timeEdit">
              <property name="minimumSize">
               <size>
                <width>0</width>
@@ -316,7 +311,6 @@ border-radius: 5px;</string>
            <property name="font">
             <font>
              <family>Arial</family>
-             <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
@@ -326,7 +320,7 @@ border-radius: 5px;</string>
           </widget>
          </item>
          <item>
-          <widget class="QTextEdit" name="textEdit_desc">
+          <widget class="QTextEdit" name="txt_descricao">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -343,7 +337,7 @@ border-radius: 5px;</string>
        <item>
         <spacer name="verticalSpacer_form">
          <property name="orientation">
-          <enum>Qt::Vertical</enum>
+          <enum>Qt::Orientation::Vertical</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -361,7 +355,7 @@ border-radius: 5px;</string>
          <item>
           <spacer name="horizontalSpacer_botoes">
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
@@ -383,7 +377,6 @@ border-radius: 5px;</string>
             <font>
              <family>Arial</family>
              <pointsize>10</pointsize>
-             <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
@@ -417,7 +410,6 @@ QPushButton:hover {
             <font>
              <family>Arial</family>
              <pointsize>10</pointsize>
-             <weight>75</weight>
              <bold>true</bold>
             </font>
            </property>
