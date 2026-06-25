@@ -28,20 +28,9 @@ class MainController:
             self.view.login_ui.btn_entrar.clicked.connect(self.acao_login)
 
         # Cadastro Novo Usuário 
+        # Cadastro Novo Usuário (Apenas liga o evento à função)
         if self.view.login_ui and hasattr(self.view.login_ui, 'label_registro'):
-            label = self.view.login_ui.label_registro
-            
-            # Força o Qt a liberar a interação por mouse e captura interna de links
-            from PySide6.QtCore import Qt
-            label.setOpenExternalLinks(False)
-            label.setTextInteractionFlags(Qt.LinksAccessibleByMouse)
-            
-            # Modifica o cursor
-            from PySide6.QtGui import QCursor
-            label.setCursor(QCursor(Qt.PointingHandCursor))
-            
-            # Conecta o clique no link HTML diretamente à função de abrir o cadastro
-            label.linkActivated.connect(self.acao_abrir_cadastro_usuario)
+            self.view.login_ui.label_registro.linkActivated.connect(self.acao_abrir_cadastro_usuario)
             
         # Tela Principal
         if self.view.main_ui:
