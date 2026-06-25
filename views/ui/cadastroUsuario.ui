@@ -37,6 +37,17 @@ QRadioButton {
     font-family: Arial;
     font-size: 10pt;
     color: #6D6A6A;
+}
+QRadioButton::indicator {
+    width: 14px;
+    height: 14px;
+    border: 2px solid #6D6A6A;
+    border-radius: 7px;
+    background-color: transparent;
+}
+QRadioButton::indicator:checked {
+    background-color: #30B427;
+    border: 2px solid #30B427;
 }</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_main">
@@ -61,18 +72,11 @@ QRadioButton {
       <font>
        <family>Arial</family>
        <pointsize>16</pointsize>
-       <weight>75</weight>
        <bold>true</bold>
       </font>
      </property>
-     <property name="styleSheet">
-      <string>color: #333333;</string>
-     </property>
      <property name="text">
       <string>Cadastro de usuário</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVerticalCenter</set>
      </property>
     </widget>
    </item>
@@ -81,7 +85,6 @@ QRadioButton {
      <property name="spacing">
       <number>12</number>
      </property>
-     
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_nome">
        <property name="spacing">
@@ -100,7 +103,6 @@ QRadioButton {
        </item>
       </layout>
      </item>
-
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_email">
        <property name="spacing">
@@ -119,13 +121,11 @@ QRadioButton {
        </item>
       </layout>
      </item>
-
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_seletores">
        <property name="spacing">
         <number>20</number>
        </property>
-       
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_tipo">
          <property name="spacing">
@@ -147,7 +147,6 @@ QRadioButton {
          </item>
         </layout>
        </item>
-
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_periodo">
          <property name="spacing">
@@ -169,7 +168,6 @@ QRadioButton {
          </item>
         </layout>
        </item>
-
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_nascimento">
          <property name="spacing">
@@ -186,12 +184,10 @@ QRadioButton {
            <property name="calendarPopup"><bool>true</bool></property>
           </widget>
          </item>
-         <item><spacer name="spacer_nascimento"><property name="orientation"><enum>Qt::Vertical</enum></property></spacer></item>
         </layout>
        </item>
       </layout>
      </item>
-
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_curso">
        <property name="spacing">
@@ -210,7 +206,6 @@ QRadioButton {
        </item>
       </layout>
      </item>
-
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_academico">
        <property name="spacing">
@@ -254,7 +249,6 @@ QRadioButton {
        </item>
       </layout>
      </item>
-
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_cargo">
        <property name="spacing">
@@ -273,7 +267,6 @@ QRadioButton {
        </item>
       </layout>
      </item>
-
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_senha">
        <property name="spacing">
@@ -293,40 +286,27 @@ QRadioButton {
        </item>
       </layout>
      </item>
-
-     <item><spacer name="verticalSpacer_form"><property name="orientation"><enum>Qt::Vertical</enum></property></spacer></item>
-     
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_botoes">
-       <item><spacer name="left_spacer"><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
        <item>
         <widget class="QPushButton" name="btn_cadastrar">
          <property name="minimumSize"><size><width>320</width><height>45</height></size></property>
          <property name="font">
-          <font><family>Arial</family><pointsize>11</pointsize><weight>75</weight><bold>true</bold></font>
+          <font><family>Arial</family><pointsize>11</pointsize><bold>true</bold></font>
          </property>
          <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
          <property name="styleSheet">
-          <string>QPushButton {
-    background-color: #2CB300;
-    color: white;
-    border-radius: 8px;
-}
-QPushButton:hover {
-    background-color: #248F00;
-}</string>
+          <string>
+        QPushButton { background-color: #30B400; color: white; border-radius: 8px; }
+        QPushButton:hover { background-color: #248F00; }</string>
          </property>
          <property name="text"><string>Cadastrar</string></property>
         </widget>
        </item>
-       <item><spacer name="right_spacer"><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
       </layout>
      </item>
-
     </layout>
    </item>
   </layout>
  </widget>
- <resources/>
- <connections/>
 </ui>
