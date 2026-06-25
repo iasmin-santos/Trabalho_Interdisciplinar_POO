@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CadastroUsuarioDialog</class>
+ <widget class="QDialog" name="CadastroUsuarioDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>780</width>
+    <height>620</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Cadastro de Usuário</string>
+  </property>
+  <property name="styleSheet">
+   <string>QDialog {
+    background-color: #E4E4E4;
+}
+QLabel {
+    font-family: Arial;
+    color: #333333;
+}
+QLineEdit, QDateEdit {
+    background-color: #C3C3C3;
+    color: #6D6A6A;
+    border: none;
+    border-radius: 8px;
+    padding: 8px;
+    font-family: Arial;
+    font-size: 10pt;
+}
+QLineEdit:focus, QDateEdit:focus {
+    border: 1px solid #278c43;
+}
+QRadioButton {
+    font-family: Arial;
+    font-size: 10pt;
+    color: #6D6A6A;
+}</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_main">
+   <property name="spacing">
+    <number>15</number>
+   </property>
+   <property name="leftMargin">
+    <number>40</number>
+   </property>
+   <property name="topMargin">
+    <number>25</number>
+   </property>
+   <property name="rightMargin">
+    <number>40</number>
+   </property>
+   <property name="bottomMargin">
+    <number>25</number>
+   </property>
+   <item>
+    <widget class="QLabel" name="label_titulo">
+     <property name="font">
+      <font>
+       <family>Arial</family>
+       <pointsize>16</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string>color: #333333;</string>
+     </property>
+     <property name="text">
+      <string>Cadastro de usuário</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVerticalCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout_form">
+     <property name="spacing">
+      <number>12</number>
+     </property>
+     
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_nome">
+       <property name="spacing">
+        <number>4</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="label_nome">
+         <property name="text"><string>Nome:</string></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="txt_nome">
+         <property name="minimumSize"><size><width>0</width><height>38</height></size></property>
+         <property name="placeholderText"><string>Insira seu nome completo</string></property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_email">
+       <property name="spacing">
+        <number>4</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="label_email">
+         <property name="text"><string>E-mail:</string></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="txt_email">
+         <property name="minimumSize"><size><width>0</width><height>38</height></size></property>
+         <property name="placeholderText"><string>Insira seu e-mail</string></property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_seletores">
+       <property name="spacing">
+        <number>20</number>
+       </property>
+       
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_tipo">
+         <property name="spacing">
+          <number>4</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="label_tipo">
+           <property name="text"><string>Tipo:</string></property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QFrame" name="frame_tipo">
+           <property name="styleSheet"><string>background-color: #C3C3C3; border-radius: 8px;</string></property>
+           <layout class="QVBoxLayout" name="layout_frame_tipo">
+            <item><widget class="QRadioButton" name="rad_aluno"><property name="text"><string>Aluno</string></property></widget></item>
+            <item><widget class="QRadioButton" name="rad_funcionario"><property name="text"><string>Funcionário</string></property></widget></item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </item>
+
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_periodo">
+         <property name="spacing">
+          <number>4</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="label_periodo">
+           <property name="text"><string>Período:</string></property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QFrame" name="frame_periodo">
+           <property name="styleSheet"><string>background-color: #C3C3C3; border-radius: 8px;</string></property>
+           <layout class="QVBoxLayout" name="layout_frame_periodo">
+            <item><widget class="QRadioButton" name="rad_integral"><property name="text"><string>Integral</string></property></widget></item>
+            <item><widget class="QRadioButton" name="rad_noturno"><property name="text"><string>Noturno</string></property></widget></item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </item>
+
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_nascimento">
+         <property name="spacing">
+          <number>4</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="label_nascimento">
+           <property name="text"><string>Data de nascimento:</string></property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDateEdit" name="date_nascimento">
+           <property name="minimumSize"><size><width>0</width><height>38</height></size></property>
+           <property name="calendarPopup"><bool>true</bool></property>
+          </widget>
+         </item>
+         <item><spacer name="spacer_nascimento"><property name="orientation"><enum>Qt::Vertical</enum></property></spacer></item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_curso">
+       <property name="spacing">
+        <number>4</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="label_curso">
+         <property name="text"><string>Curso:</string></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="txt_curso">
+         <property name="minimumSize"><size><width>0</width><height>38</height></size></property>
+         <property name="placeholderText"><string>Para alunos</string></property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_academico">
+       <property name="spacing">
+        <number>20</number>
+       </property>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_semestre">
+         <property name="spacing">
+          <number>4</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="label_semestre">
+           <property name="text"><string>Semestre:</string></property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="txt_semestre">
+           <property name="minimumSize"><size><width>0</width><height>38</height></size></property>
+           <property name="placeholderText"><string>Para alunos</string></property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_ra">
+         <property name="spacing">
+          <number>4</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="label_ra">
+           <property name="text"><string>RA:</string></property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="txt_ra">
+           <property name="minimumSize"><size><width>0</width><height>38</height></size></property>
+           <property name="placeholderText"><string>Para alunos</string></property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </item>
+
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_cargo">
+       <property name="spacing">
+        <number>4</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="label_cargo">
+         <property name="text"><string>Cargo:</string></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="txt_cargo">
+         <property name="minimumSize"><size><width>0</width><height>38</height></size></property>
+         <property name="placeholderText"><string>Para funcionários</string></property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_senha">
+       <property name="spacing">
+        <number>4</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="label_senha">
+         <property name="text"><string>Crie uma senha:</string></property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="txt_senha">
+         <property name="minimumSize"><size><width>0</width><height>38</height></size></property>
+         <property name="echoMode"><enum>QLineEdit::Password</enum></property>
+         <property name="placeholderText"><string>Insira a senha</string></property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+
+     <item><spacer name="verticalSpacer_form"><property name="orientation"><enum>Qt::Vertical</enum></property></spacer></item>
+     
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_botoes">
+       <item><spacer name="left_spacer"><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+       <item>
+        <widget class="QPushButton" name="btn_cadastrar">
+         <property name="minimumSize"><size><width>320</width><height>45</height></size></property>
+         <property name="font">
+          <font><family>Arial</family><pointsize>11</pointsize><weight>75</weight><bold>true</bold></font>
+         </property>
+         <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
+         <property name="styleSheet">
+          <string>QPushButton {
+    background-color: #2CB300;
+    color: white;
+    border-radius: 8px;
+}
+QPushButton:hover {
+    background-color: #248F00;
+}</string>
+         </property>
+         <property name="text"><string>Cadastrar</string></property>
+        </widget>
+       </item>
+       <item><spacer name="right_spacer"><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+      </layout>
+     </item>
+
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
