@@ -11,5 +11,6 @@ O Achados e Perdidos IFMG é um sistema desenvolvido para auxiliar no registro e
 - Cadastro de objetos encontrados.
 - Consulta de itens cadastrados.
 - Registro da devolução de itens.
-
+## 📌 Arquitetura do Projeto e Diagrama de Classes
+O projeto foi estruturado seguindo o padrão arquitetural Model-View-Controller (MVC). A camada de View carrega interfaces dinamicamente via `QUiLoader` a partir de arquivos `.ui`, além de renderizar componentes reutilizáveis como o `item_card.py`. A persistência utiliza uma base de dados relacional SQLite (`achados_e_perdidos.db`), centralizada em uma classe `Database` e estendida por um `BaseModel`. O domínio do sistema aplica conceitos avançados de POO, utilizando classes abstratas (`Item` e `Usuario`) que se ramificam polimorficamente em especializações para o ecossistema acadêmico do IFMG (como `Aluno`, `Funcionario`, `ItemPerdido` e `ItemAchado`).
 Projeto desenvolvido para a disciplina Trabalho de Extensão: Orientação a objetos do Curso de Ciência da Computação do IFMG-Campus Ibirité.
