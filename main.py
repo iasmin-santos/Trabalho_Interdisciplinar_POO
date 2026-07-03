@@ -1,8 +1,8 @@
 import sys
 from PySide6.QtWidgets import QApplication
 from models.database import Database
-from models.item_model import ItemModel
-from models.usuario_model import UsuarioModel
+from models.item import ItemModel
+from models.usuario import UsuarioModel
 from views.main_view import MainView
 from controllers.main_controller import MainController
 

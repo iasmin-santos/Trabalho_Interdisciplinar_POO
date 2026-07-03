@@ -1,42 +1,41 @@
 import shutil
 import os
 import time
+from abc import ABC, abstractmethod
 from PySide6.QtWidgets import QMessageBox, QListWidgetItem, QFileDialog
 from PySide6.QtCore import Qt, QObject, QEvent
+from PySide6.QtGui import QCursor, QPixmap
+from views.item_card import ItemCardWidget
 
-class MainController(QObject):  # <-- Altere aqui para herdar de QObject
+class MainController(QObject):  
+    """
+    Controlador principal do sistema aplicando o padrão estrutural MVC,
+    conectando diretamente a visualização (MainView) aos modelos de dados.
+    """
     def __init__(self, view, item_model, usuario_model):
-        super().__init__()  # <-- OBRIGATÓRIO: Inicializa o QObject interno do Qt
+        super().__init__()  
+        
+        # Atributos de instância encapsulando as camadas do MVC 
         self.view = view
         self.item_model = item_model
         self.usuario_model = usuario_model
         
-        self.dialog_perdido = None
-        self.dialog_encontrado = None
+        # Variáveis de controle de sessão e janelas flutuantes
         self.foto_selecionada_path = None
-        
-        # Mantém self.model referenciando usuario_model para o cadastro funcionar
-        self.model = self.usuario_model 
-
-        # Variável temporária para armazenar a foto selecionada na sessão atual
-        self.foto_selecionada_path = None
-        
-        # Inicializa as variáveis dos diálogos/janelas
         self.dialog_cadastro = None
         self.dialog_perdido = None
         self.dialog_encontrado = None
-
-        # Configura as ações e conexões de eventos
+        
+        # Inicialização das rotinas e conexões de eventos
         self.conectar_eventos()
-
-        # Atualiza a listagem de itens puxando os dados reais do SQLite ao iniciar
         self.atualizar_grid_itens()
         
-        # Inicia pela tela de login
+        # Inicializa o fluxo de exibição da interface gráfica
         if self.view.login_ui:
             self.view.login_ui.show()
 
     def conectar_eventos(self):
+        """Mapeia os cliques dos botões da View para os métodos do Controller."""
         # Login
         if self.view.login_ui:
             self.view.login_ui.btn_entrar.clicked.connect(self.acao_login)
@@ -45,7 +44,6 @@ class MainController(QObject):  # <-- Altere aqui para herdar de QObject
         if self.view.login_ui and hasattr(self.view.login_ui, 'label_registro'):
             label = self.view.login_ui.label_registro
 
-            # Isso força o sinal 'linkActivated' do PySide6 a funcionar!
             texto_html = (
                 '<html><body><p align="center">'
                 'Não tem conta ainda? '
@@ -55,15 +53,9 @@ class MainController(QObject):  # <-- Altere aqui para herdar de QObject
             )
             label.setText(texto_html)
 
-            # Garante que o Qt trate o clique internamente no Python em vez de abrir o navegador
             label.setOpenExternalLinks(False)
             label.setTextInteractionFlags(Qt.LinksAccessibleByMouse)
-            
-            # Altera o cursor para a "mãozinha" de clique
-            from PySide6.QtGui import QCursor
             label.setCursor(QCursor(Qt.PointingHandCursor))
-
-            # Conecta o sinal que agora vai disparar de verdade
             label.linkActivated.connect(self.acao_abrir_cadastro_usuario)
             
         # Tela Principal (Ações e Barra de Busca)
@@ -71,25 +63,22 @@ class MainController(QObject):  # <-- Altere aqui para herdar de QObject
             self.view.main_ui.btn_perdi.clicked.connect(self.acao_perdi_item) 
             self.view.main_ui.btn_encontrei.clicked.connect(self.acao_encontrei_item)
             
-            # Conecta em tempo real o ato de digitar na barra de busca ao filtro com o banco
             if hasattr(self.view.main_ui, 'lineEdit_busca'):
                 self.view.main_ui.lineEdit_busca.textChanged.connect(self.filtrar_itens)
-
+               
     def acao_login(self):
+        """Gerencia a autenticação delegando a regra de negócio ao modelo encapsulado."""
         ui = self.view.login_ui
         if not ui:
             return
 
-        # 1. Coleta os dados usando os nomes reais do seu arquivo .ui
         email = ui.lineEdit_email.text().strip()
         senha = ui.lineEdit_senha.text()
 
-        # 2. Validação básica de campos vazios
         if not email or not senha:
             QMessageBox.warning(ui, "Aviso", "Por favor, preencha o e-mail e a senha.")
             return
 
-        # 3. Chama a função de autenticação do seu UsuarioModel
         usuario_valido = self.usuario_model.verificar_login(email, senha)
 
         if usuario_valido:
@@ -101,81 +90,43 @@ class MainController(QObject):  # <-- Altere aqui para herdar de QObject
             QMessageBox.critical(ui, "Erro de Acesso", "E-mail ou senha incorretos.")
 
     def acao_perdi_item(self):
+        """Instancia a tela de itens perdidos e injeta os filtros de eventos via POO."""
         self.dialog_perdido = self.view.carregar_ui('perdido.ui')
         if self.dialog_perdido:
             self.foto_selecionada_path = None
             self.dialog_perdido.btn_cancelar.clicked.connect(self.dialog_perdido.close) 
             self.dialog_perdido.btn_cadastrar.clicked.connect(self.salvar_item_perdido) 
             
-            # --- FILTRO DE EVENTOS NATIVO (PERDIDO) ---
             if hasattr(self.dialog_perdido, 'label_foto'):
                 label = self.dialog_perdido.label_foto
                 label.setAttribute(Qt.WA_TransparentForMouseEvents, False)
-                
-                from PySide6.QtGui import QCursor
                 label.setCursor(QCursor(Qt.PointingHandCursor))
-                
-                # Diz ao Qt para monitorizar este label
                 label.installEventFilter(self)
                 label.setProperty("janela_mae", self.dialog_perdido)
 
             self.dialog_perdido.exec()
 
     def acao_encontrei_item(self):
+        """Instancia a tela de itens achados e injeta os filtros de eventos via POO."""
         self.dialog_encontrado = self.view.carregar_ui('cadastro.ui')
         if self.dialog_encontrado:
             self.foto_selecionada_path = None
             self.dialog_encontrado.btn_cancelar.clicked.connect(self.dialog_encontrado.close) 
             self.dialog_encontrado.btn_cadastrar.clicked.connect(self.salvar_item_encontrado) 
             
-            # --- FILTRO DE EVENTOS NATIVO (ACHADO) ---
             if hasattr(self.dialog_encontrado, 'label_foto'):
                 label = self.dialog_encontrado.label_foto
                 label.setAttribute(Qt.WA_TransparentForMouseEvents, False)
-                
-                from PySide6.QtGui import QCursor
                 label.setCursor(QCursor(Qt.PointingHandCursor))
-                
                 label.installEventFilter(self)
                 label.setProperty("janela_mae", self.dialog_encontrado)
 
             self.dialog_encontrado.exec()
 
-    def salvar_item_perdido(self):
-        """Captura todas as informações preenchidas na interface 'perdido.ui'."""
-        ui = self.dialog_perdido
-        if not ui:
-            return
-
-        # Coleta de dados com fallbacks de segurança
-        titulo = ui.txt_nome_item.text().strip() if hasattr(ui, 'txt_nome_item') else ""
-        detalhes = ui.txt_descricao.toPlainText().strip() if hasattr(ui, 'txt_descricao') else ""
-        local_item = ui.txt_local.text().strip() if hasattr(ui, 'txt_local') else "Não especificado"
-        
-        # Coleta campos de data/hora se existirem na sua tela de perdido
-        hora_perda = ui.timeEdit.time().toString("HH:mm") if hasattr(ui, 'timeEdit') else ""
-
-        if not titulo:
-            QMessageBox.warning(ui, "Aviso", "Por favor, preencha o campo Nome do Item.")
-            return
-
-        # Monta uma descrição rica com tudo o que foi digitado
-        descricao_completa = f"{detalhes}\n(Hora provável da perda: {hora_perda})" if hora_perda else detalhes
-
-        dados_item = {
-            'titulo': titulo,
-            'descricao': descricao_completa,
-            'local': local_item if local_item else "Campus",
-            'tipo_item': 'Perdido', # Primeira letra maiúscula por causa do CHECK do banco
-            'status': 'Ativo',
-            'id_usuario': None # Pode vincular o ID do usuário logado aqui no futuro
-        }
-
-        # --- PROCESSO DE CÓPIA DA FOTO ---
+    def _processar_copia_foto(self):
         caminho_foto_banco = None
         if self.foto_selecionada_path and os.path.exists(self.foto_selecionada_path):
             try:
-                # GARANTE QUE A PASTA EXISTE ANTES DE COPIAR!
                 if not os.path.exists("fotos_itens"):
                     os.makedirs("fotos_itens")
                 
@@ -185,20 +136,43 @@ class MainController(QObject):  # <-- Altere aqui para herdar de QObject
                 shutil.copy(self.foto_selecionada_path, destino)
                 caminho_foto_banco = destino
             except Exception as e:
-                print(f"Erro ao processar imagem: {e}")
+                print(f"Erro ao processar imagem de forma encapsulada: {e}")
+        return caminho_foto_banco
 
-        # Adicione o 'foto_path' ao seu dicionário de dados do item:
-        dados_item = {
-            'titulo': titulo, # ou titulo
-            'descricao': descricao_completa,
-            'local': local_item,
-            'tipo_item': 'Achado', # ou 'Perdido'
-            'status': 'Ativo',
-            'foto_path': caminho_foto_banco, # <- INJETADO NO BANCO AQUI
-            'id_usuario': None
-        }
+    def salvar_item_perdido(self):
+        """Captura os dados da interface, instancia o domínio e delega a inserção."""
+        ui = self.dialog_perdido
+        if not ui:
+            return
 
-        if self.item_model.cadastrar_item(dados_item):
+        titulo = ui.txt_nome_item.text().strip() if hasattr(ui, 'txt_nome_item') else ""
+        detalhes = ui.txt_descricao.toPlainText().strip() if hasattr(ui, 'txt_descricao') else ""
+        local_item = ui.txt_local.text().strip() if hasattr(ui, 'txt_local') else "Não especificado"
+        hora_perda = ui.timeEdit.time().toString("HH:mm") if hasattr(ui, 'timeEdit') else ""
+
+        if not titulo:
+            QMessageBox.warning(ui, "Aviso", "Por favor, preencha o campo Nome do Item.")
+            return
+
+        descricao_completa = f"{detalhes}\n(Hora provável da perda: {hora_perda})" if hora_perda else detalhes
+        caminho_foto_banco = self._processar_copia_foto()
+
+        try:
+            from models.item import ItemPerdido
+            item_perdido = ItemPerdido(
+                titulo=titulo,
+                descricao=descricao_completa,
+                local=local_item if local_item else "Campus",
+                foto_path=caminho_foto_banco,
+                status='Ativo',
+                id_usuario=None
+            )
+            item_perdido.validar()
+        except Exception as erro_validacao:
+            QMessageBox.warning(ui, "Erro de Validação", str(erro_validacao))
+            return
+
+        if self.item_model.cadastrar_item(item_perdido.to_dict()):
             QMessageBox.information(ui, "Sucesso", "Item cadastrado como perdido com sucesso!")
             ui.close()
             self.atualizar_grid_itens()
@@ -206,17 +180,14 @@ class MainController(QObject):  # <-- Altere aqui para herdar de QObject
             QMessageBox.critical(ui, "Erro", "Erro ao salvar no banco de dados.")
 
     def salvar_item_encontrado(self):
-        """Captura absolutamente tudo preenchido na interface de Achados ('cadastro.ui')."""
+        """Agrupa os dados, instancia a classe ItemAchado e envia ao modelo."""
         ui = self.dialog_encontrado
         if not ui:
             return
 
-        # Captura os dados baseado na sua imagem
         quem_encontrou = ui.txt_nome_encontrou.text().strip() if hasattr(ui, 'txt_nome_encontrou') else "Anônimo"
         categoria = ui.txt_categoria.text().strip() if hasattr(ui, 'txt_categoria') else ""
         local_item = ui.txt_local.text().strip() if hasattr(ui, 'txt_local') else ""
-        
-        # Captura a Data e a Hora selecionadas nos seletores do Qt
         data_achado = ui.dateEdit.date().toString("dd/MM/yyyy") if hasattr(ui, 'dateEdit') else ""
         hora_achado = ui.timeEdit.time().toString("HH:mm") if hasattr(ui, 'timeEdit') else ""
 
@@ -228,49 +199,25 @@ class MainController(QObject):  # <-- Altere aqui para herdar de QObject
             QMessageBox.warning(ui, "Aviso", "Por favor, preencha o Local Onde Encontrou.")
             return
 
-        # Compõe o campo descrição unificando tudo que a pessoa preencheu
-        descricao_completa = (
-            f"Encontrado por: {quem_encontrou}. "
-            f"Data: {data_achado} às {hora_achado}."
-        )
+        descricao_completa = f"Encontrado por: {quem_encontrou}. Data: {data_achado} às {hora_achado}."
+        caminho_foto_banco = self._processar_copia_foto()
 
-        dados_item = {
-            'titulo': categoria,
-            'descricao': descricao_completa,
-            'local': local_item,
-            'tipo_item': 'Achado', # Respeitando o CHECK ('Achado')
-            'status': 'Ativo',
-            'id_usuario': None
-        }
+        try:
+            from models.item import ItemAchado
+            item_achado = ItemAchado(
+                titulo=categoria,
+                descricao=descricao_completa,
+                local=local_item,
+                foto_path=caminho_foto_banco,
+                status='Ativo',
+                id_usuario=None
+            )
+            item_achado.validar()
+        except Exception as erro_validacao:
+            QMessageBox.warning(ui, "Erro de Validação", str(erro_validacao))
+            return
 
-        # --- PROCESSO DE CÓPIA DA FOTO ---
-        caminho_foto_banco = None
-        if self.foto_selecionada_path and os.path.exists(self.foto_selecionada_path):
-            try:
-                # GARANTE QUE A PASTA EXISTE ANTES DE COPIAR!
-                if not os.path.exists("fotos_itens"):
-                    os.makedirs("fotos_itens")
-                
-                nome_arquivo = f"{int(time.time())}_{os.path.basename(self.foto_selecionada_path)}"
-                destino = os.path.join("fotos_itens", nome_arquivo)
-                
-                shutil.copy(self.foto_selecionada_path, destino)
-                caminho_foto_banco = destino
-            except Exception as e:
-                print(f"Erro ao processar imagem: {e}")
-
-        # Adicione o 'foto_path' ao seu dicionário de dados do item:
-        dados_item = {
-            'titulo': categoria, # ou titulo
-            'descricao': descricao_completa,
-            'local': local_item,
-            'tipo_item': 'Achado', # ou 'Perdido'
-            'status': 'Ativo',
-            'foto_path': caminho_foto_banco, # <- INJETADO NO BANCO AQUI
-            'id_usuario': None
-        }
-
-        if self.item_model.cadastrar_item(dados_item):
+        if self.item_model.cadastrar_item(item_achado.to_dict()):
             QMessageBox.information(ui, "Sucesso", "Item cadastrado com sucesso!")
             ui.close()
             self.atualizar_grid_itens()
@@ -278,79 +225,42 @@ class MainController(QObject):  # <-- Altere aqui para herdar de QObject
             QMessageBox.critical(ui, "Erro", "Erro ao salvar o item encontrado no banco de dados.")
 
     def clique_na_foto(self, event):
-        """Função nativa que responde ao clique do mouse recebendo o evento corretamente."""
-        # Recupera quem foi o QLabel clicado
+        """Mapeia o clique físico no componente de imagem via propriedades polimórficas."""
         label_clicado = self.sender() if self.sender() else None
         
-        # Se o sender do Qt falhar, tentamos identificar pelo objeto ativo
-        if not label_clicado and hasattr(self, 'dialog_perdido') and self.dialog_perdido:
+        if not label_clicado and self.dialog_perdido:
             if hasattr(self.dialog_perdido, 'label_foto') and self.dialog_perdido.label_foto.underMouse():
                 label_clicado = self.dialog_perdido.label_foto
-        if not label_clicado and hasattr(self, 'dialog_encontrado') and self.dialog_encontrado:
+        if not label_clicado and self.dialog_encontrado:
             if hasattr(self.dialog_encontrado, 'label_foto') and self.dialog_encontrado.label_foto.underMouse():
                 label_clicado = self.dialog_encontrado.label_foto
 
         if label_clicado:
-            # Puxa a janela mãe correspondente
             janela_pai = label_clicado.property("janela_mae")
-            
-            # Executa a abertura forçada da janela de arquivos
             self.abrir_seletor_arquivos(janela_pai, label_clicado)
-
+ 
     def abrir_seletor_arquivos(self, janela_atual, label_alvo):
-        """Abre a janela de seleção de ficheiros e renderiza a imagem."""
-        from PySide6.QtGui import QPixmap
-        
+        """Encapsula a chamada nativa do gerenciador de arquivos do sistema operacional."""
         arquivo, _ = QFileDialog.getOpenFileName(
             janela_atual,
             "Selecionar Foto do Item",
             "",
             "Imagens (*.png *.jpg *.jpeg)"
         )
-        
         if arquivo:
-            self.foto_selecionada_path = arquivo
-            print(f"Ficheiro escolhido: {arquivo}")
-            
-            pixmap = QPixmap(arquivo)
-            pixmap_redimensionado = pixmap.scaled(
-                label_alvo.width(), 
-                label_alvo.height(), 
-                Qt.KeepAspectRatio, 
-                Qt.SmoothTransformation
-            )
-            label_alvo.setPixmap(pixmap_redimensionado)
-            label_alvo.setAlignment(Qt.AlignCenter)
+            self.definir_foto_no_label(arquivo, label_alvo)
 
     def selecionar_foto(self, janela_atual, label_alvo):
-        """Abre a janela nativa de arquivos do Windows."""
-        arquivo, _ = QFileDialog.getOpenFileName(
-            janela_atual,
-            "Selecionar Foto do Item",
-            "",
-            "Imagens (*.png *.jpg *.jpeg)"
-        )
-        
-        if arquivo:
-            self.foto_selecionada_path = arquivo
-            print(f"Foto detectada com sucesso: {arquivo}")
-            
-            from PySide6.QtGui import QPixmap
-            pixmap = QPixmap(arquivo)
-            pixmap_redimensionado = pixmap.scaled(
-                label_alvo.width(), 
-                label_alvo.height(), 
-                Qt.KeepAspectRatio, 
-                Qt.SmoothTransformation
-            )
-            label_alvo.setPixmap(pixmap_redimensionado)
-            label_alvo.setAlignment(Qt.AlignCenter)
+        """Interface redundante mantida para compatibilidade interna do fluxo."""
+        self.abrir_seletor_arquivos(janela_atual, label_alvo)
 
     def evento_arrastar_entrar(self, event):
+        """Manipulação polimórfica de eventos Drag and Drop."""
         if event.mimeData().hasUrls():
             event.acceptProposedAction()
 
     def evento_soltar_foto(self, event, label_alvo):
+        """Manipulação polimórfica de recepção de arquivos externos via Drop."""
         urls = event.mimeData().urls()
         if urls:
             arquivo = urls[0].toLocalFile()
@@ -359,9 +269,8 @@ class MainController(QObject):  # <-- Altere aqui para herdar de QObject
                 event.acceptProposedAction()
 
     def definir_foto_no_label(self, arquivo_path, label_alvo):
-        from PySide6.QtGui import QPixmap
+        """Aplica o tratamento e redimensionamento da imagem de forma encapsulada."""
         self.foto_selecionada_path = arquivo_path
-        
         pixmap = QPixmap(arquivo_path)
         pixmap_redimensionado = pixmap.scaled(
             label_alvo.width(), 
@@ -373,104 +282,78 @@ class MainController(QObject):  # <-- Altere aqui para herdar de QObject
         label_alvo.setAlignment(Qt.AlignCenter)
 
     def eventFilter(self, watched, event):
-        """Interceta nativamente o clique do rato no QLabel da foto."""
-        # Se o evento for um clique com o botão esquerdo do rato
+        """Intercepta nativamente eventos do Qt."""
         if event.type() == QEvent.MouseButtonPress and event.button() == Qt.LeftButton:
             if watched.objectName() == "label_foto":
-                print("Clique intercetado com sucesso no QLabel!")
-                
                 janela_pai = watched.property("janela_mae")
                 self.abrir_seletor_arquivos(janela_pai, watched)
-                return True  # Indica ao Qt que o evento foi resolvido aqui
-                
+                return True  
         return super().eventFilter(watched, event)
-        
+
     def atualizar_grid_itens(self, itens=None):
-        """Atualiza a lista principal importando o Card corretamente da pasta views."""
+        """Carrega e renderiza os cards de itens dinamicamente na interface."""
         try:
             if itens is None:
                 itens = self.item_model.obter_todos_itens()
 
-            from PySide6.QtWidgets import QListWidget, QListWidgetItem
+            from PySide6.QtWidgets import QListWidget
             
-            # Localiza o componente de lista na tela de forma dinâmica
             lista_widget = self.view.findChild(QListWidget)
             if not lista_widget and hasattr(self.view, 'main_ui'):
                 lista_widget = self.view.main_ui.findChild(QListWidget)
 
             if lista_widget:
-                lista_widget.clear()  # Limpa a tela para recarregar
-                
-                # --- CORREÇÃO DO IMPORT: Aponta para a pasta views ---
-                from views.item_card import ItemCardWidget
+                lista_widget.clear() 
                 
                 for item in itens:
                     item_container = QListWidgetItem(lista_widget)
-                    
-                    # Cria o card passando o objeto com as propriedades corrigidas
                     card = ItemCardWidget(item)
-                    
-                    # Define o tamanho correto e injeta na lista
                     item_container.setSizeHint(card.sizeHint())
                     lista_widget.setItemWidget(item_container, card)
-                
-                print(f"Grid atualizado com sucesso! {len(itens)} cards carregados.")
+                print(f"Grid updated successfully! {len(itens)} cards loaded.")
             else:
                 print("Aviso: Nenhum componente QListWidget foi localizado na interface gráfica.")
-
         except Exception as e:
             print(f"Erro crítico ao renderizar os cards na tela: {e}")
 
     def filtrar_itens(self):
-        """Lê em tempo real a barra de busca e faz o filtro direto nas colunas do banco."""
+        """Mapeia em tempo real a busca na interface e aplica filtros no banco."""
         if not self.view.main_ui or not hasattr(self.view.main_ui, 'lineEdit_busca'):
             return
 
         texto_busca = self.view.main_ui.lineEdit_busca.text().strip()
         
-        # Se o usuário apagar o que digitou, recarrega todos os itens originais do banco
         if not texto_busca:
             itens_filtrados = self.item_model.obter_todos_itens()
         else:
-            # Caso contrário, executa a query 'LIKE %termo%' estruturada no ItemModel
             itens_filtrados = self.item_model.buscar_itens_por_filtro(texto_busca)
         
-        # Atualiza a interface gráfica (os cards do seu QListWidget)
         self.atualizar_grid_itens(itens_filtrados)
         
     def acao_abrir_cadastro_usuario(self):
-        # Abre a janela de cadastro de usuário
+        """Instancia o formulário e configura dinamicamente as alternâncias visuais."""
         self.dialog_cadastro = self.view.carregar_ui('cadastroUsuario.ui')
         if self.dialog_cadastro:
-            # Conecta os RadioButtons para alternar o estado dos campos (Aluno vs Funcionário)
             self.dialog_cadastro.rad_aluno.toggled.connect(self.alternar_campos_formulario)
             self.dialog_cadastro.rad_funcionario.toggled.connect(self.alternar_campos_formulario)
             
-            # Deixa marcado 'Aluno' por padrão 
             self.dialog_cadastro.rad_aluno.setChecked(True)
             self.alternar_campos_formulario()
-
-            # Conecta os botões da interface
             self.dialog_cadastro.btn_cadastrar.clicked.connect(self.salvar_novo_usuario)
-            
             self.dialog_cadastro.exec()
 
     def alternar_campos_formulario(self):
-        # Habilita ou desabilita campos dependendo do tipo de usuário selecionado
+        """Gerencia o estado dos componentes visuais com base no tipo selecionado."""
         if not self.dialog_cadastro:
             return
             
         is_aluno = self.dialog_cadastro.rad_aluno.isChecked()
         
-        # Campos exclusivos de Aluno
         self.dialog_cadastro.txt_curso.setEnabled(is_aluno)
         self.dialog_cadastro.txt_semestre.setEnabled(is_aluno)
         self.dialog_cadastro.txt_ra.setEnabled(is_aluno)
-        
-        # Campos exclusivos de Funcionário
         self.dialog_cadastro.txt_cargo.setEnabled(not is_aluno)
         
-        # Limpa os campos desabilitados para evitar lixo visual
         if is_aluno:
             self.dialog_cadastro.txt_cargo.clear()
         else:
@@ -478,44 +361,58 @@ class MainController(QObject):  # <-- Altere aqui para herdar de QObject
             self.dialog_cadastro.txt_semestre.clear()
             self.dialog_cadastro.txt_ra.clear()
 
-
     def salvar_novo_usuario(self):
-        # Coleta as strings, valida as informações básicas e salva no Model
+        """Captura os dados da interface, instancia o domínio (Aluno/Funcionário) e valida."""
         ui = self.dialog_cadastro
         if not ui:
             return
         
-        # Validação de campos obrigatórios 
-        if not ui.txt_nome.text().strip() or not ui.txt_email.text().strip() or not ui.txt_senha.text().strip():
+        nome = ui.txt_nome.text().strip()
+        email = ui.txt_email.text().strip()
+        senha = ui.txt_senha.text()
+        nascimento = ui.date_nascimento.date().toString("yyyy-MM-dd")
+        tipo = "aluno" if ui.rad_aluno.isChecked() else "funcionario"
+        periodo = "Integral" if ui.rad_integral.isChecked() else "Noturno"
+
+        if not nome or not email or not senha:
             QMessageBox.warning(ui, "Aviso", "Preencha os campos obrigatórios (Nome, E-mail e Senha).")
             return
 
-        # Define os parâmetros de Tipo e Período baseados nos RadioButtons
-        tipo = "aluno" if ui.rad_aluno.isChecked() else "funcionario"
-        periodo = "Integral" if ui.rad_integral.isChecked() else "Noturno"
-        
-        # Conversão segura para o Semestre
-        semestre_texto = ui.txt_semestre.text().strip()
-        semestre_valor = int(semestre_texto) if semestre_texto.isdigit() else None
+        try:
+            from models.usuario import Aluno, Funcionario
+            
+            if tipo == "aluno":
+                semestre_texto = ui.txt_semestre.text().strip()
+                semestre_valor = int(semestre_texto) if semestre_texto.isdigit() else 1
+                
+                usuario_objeto = Aluno(
+                    nome=nome,
+                    email=email,
+                    senha=senha,
+                    data_nascimento=nascimento,
+                    ra=ui.txt_ra.text().strip(),
+                    curso=ui.txt_curso.text().strip(),
+                    periodo=periodo,
+                    semestre=semestre_valor
+                )
+            else:
+                usuario_objeto = Funcionario(
+                    nome=nome,
+                    email=email,
+                    senha=senha,
+                    data_nascimento=nascimento,
+                    cargo=ui.txt_cargo.text().strip()
+                )
+                
+            # Executa o método obrigatório de validação do diagrama
+            usuario_objeto.validar()
+            
+        except Exception as erro_validacao:
+            QMessageBox.warning(ui, "Erro de Validação", str(erro_validacao))
+            return
 
-        # Monta o dicionário estruturado para enviar ao Model
-        dados_usuario = {
-            'nome': ui.txt_nome.text().strip(),
-            'email': ui.txt_email.text().strip(),
-            'senha': ui.txt_senha.text(),  
-            'nascimento': ui.date_nascimento.date().toString("yyyy-MM-dd"),
-            'tipo_usuario': tipo,
-            'ra': ui.txt_ra.text().strip() if tipo == "aluno" else None,
-            'curso': ui.txt_curso.text().strip() if tipo == "aluno" else None,
-            'periodo': periodo,
-            'semestre': semestre_valor if tipo == "aluno" else None,
-            'cargo': ui.txt_cargo.text().strip() if tipo == "funcionario" else None
-        }
-
-        # Envia os dados estruturados para o método cadastrar_usuario da classe Database
-        sucesso = self.model.cadastrar_usuario(dados_usuario)
-        
-        if sucesso:
+        # Envia o objeto estruturado para o modelo de persistência
+        if self.usuario_model.cadastrar_usuario(usuario_objeto.to_dict()):
             QMessageBox.information(ui, "Sucesso", "Usuário cadastrado com sucesso!")
             ui.close()
         else:
