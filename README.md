@@ -12,6 +12,9 @@ O Achados e Perdidos IFMG é um sistema desenvolvido para auxiliar no registro e
 - Consulta de itens cadastrados.
 - Registro da devolução de itens.
 ### 👥Equipe de desenvolvimento
-[Link Text](URL)
+[Alice Alves](https://github.com/Alivesantos3)
+[Ester Araújo](https://github.com/ester-araujo)
+[Iasmin Santos](https://github.com/iasmin-santos)
+[Paula Amorim](https://github.com/paulamori)
 
 Projeto desenvolvido para a disciplina Trabalho de Extensão: Orientação a objetos do Curso de Ciência da Computação do IFMG-Campus Ibirité.
