@@ -1,0 +1,23 @@
+# O próprio .gitignore já está sendo rastreado, então não o coloque aqui.
+
+# Pastas de ambiente virtual
+venv/
+.venv/
+env/
+
+# Cache do Python
+__pycache__/
+*.py[cod]
+
+# Banco de dados SQLite (evite subir o banco com dados locais)
+#*.db
+#*.sqlite
+#*.sqlite3
+
+# Arquivos do PyCharm/VS Code
+.vscode/
+.idea/
+
+# Arquivos do sistema operacional
+.DS_Store
+Thumbs.db
