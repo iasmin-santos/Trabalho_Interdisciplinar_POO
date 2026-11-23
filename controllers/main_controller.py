@@ -2,7 +2,7 @@ import shutil
 import os
 import time
 from abc import ABC, abstractmethod
-from PySide6.QtWidgets import QMessageBox, QListWidgetItem, QFileDialog, QPushButton
+from PySide6.QtWidgets import QMessageBox, QListWidgetItem, QFileDialog, QPushButton, QHBoxLayout
 from PySide6.QtCore import Qt, QObject, QEvent
 from PySide6.QtGui import QCursor, QPixmap
 from views.item_card import ItemCardWidget
@@ -111,31 +111,38 @@ class MainController(QObject):
         if self.view.main_ui:
             self.view.main_ui.btn_perdi.clicked.connect(self.acao_perdi_item) 
             self.view.main_ui.btn_encontrei.clicked.connect(self.acao_encontrei_item)
-                        
-            # Cria o botão dinamicamente e tenta achar um layout pai na tela principal
-            # (ou você pode adicioná-lo em um container específico da sua main_ui)
-            self.btn_painel_admin = QPushButton("Painel Administrativo", self.view.main_ui)
-            
-            # Estilo verde consistente com o restante do projeto
+                   
+            ui = self.view.main_ui
+
+            self.btn_painel_admin = QPushButton("Painel Administrativo")
+            self.btn_painel_admin.setFixedSize(200, 36)
+            self.btn_painel_admin.setCursor(Qt.PointingHandCursor)
             self.btn_painel_admin.setStyleSheet("""
                 QPushButton {
-                    background-color: #1e5c2b;
+                    background-color: #2e8b47;
                     color: white;
                     font-weight: bold;
-                    border-radius: 6px;
-                    padding: 10px;
                     font-size: 13px;
+                    border-radius: 6px;
                 }
                 QPushButton:hover {
-                    background-color: #143e1d;
+                    background-color: #1e5c2b;
                 }
             """)
-            
-            # Conecta o clique do botão criado agora mesmo ao seu método de abrir o painel
             self.btn_painel_admin.clicked.connect(self.abrir_painel_admin)
-            
-            # Posiciona o botão de forma visível na tela principal (ajuste x e y conforme sua preferência)
-            self.btn_painel_admin.setGeometry(350, 210, 250, 40) 
+
+            # Cria uma linha: [ÚLTIMAS POSTAGENS ............ Painel Administrativo]
+            linha_titulo = QHBoxLayout()
+            ui.verticalLayout_list.removeWidget(ui.label_ultimas)
+            linha_titulo.addWidget(ui.label_ultimas)
+            linha_titulo.addStretch()
+            linha_titulo.addWidget(self.btn_painel_admin)
+
+            # Insere a linha no topo do layout da lista (antes do scrollArea)
+            ui.verticalLayout_list.insertLayout(0, linha_titulo)
+
+            #"esconde" o botão de painel administrativo, por padrão. 
+            self.btn_painel_admin.setVisible(False)
             # ---------------------------------------------------------
             
             if hasattr(self.view.main_ui, 'lineEdit_busca'):
@@ -158,6 +165,7 @@ class MainController(QObject):
 
         if usuario_valido:
             print("[CONTROLLER]: Login efetuado com sucesso! Abrindo tela principal...")
+            self.btn_painel_admin.setVisible(False)
             ui.close()
             self.view.main_ui.show()
         else: 
@@ -186,14 +194,16 @@ class MainController(QObject):
         if admin_valido:
             print("[CONTROLLER]: Acesso administrativo autorizado com sucesso!")
             ui.close()
-            self.view.main_ui.show()
 
             if self.admin_view is not None:
                 self.admin_view.close()
                 
-                # 3. Atualiza os itens da tela principal para o admin ver tudo certinho
-                self.atualizar_grid_itens()
-        
+            # 3. Atualiza os itens da tela principal para o admin ver tudo certinho
+            self.atualizar_grid_itens()
+            self.btn_painel_admin.setVisible(True)  # Exibe o botão de painel administrativo
+
+            self.view.main_ui.show()
+
         else:
             print("[CONTROLLER]: Acesso administrativo negado. Credenciais inválidas ou sem privilégios.")
             QMessageBox.critical(
